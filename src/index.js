@@ -1,1 +1,14 @@
-console.log('Hello World');
+const express = require("express");
+require("./db/mongoose");
+const dotenv = require("dotenv");
+const app = express();
+const port = process.env.PORT || 3000;
+const userRouter = require("./routers/user");
+
+dotenv.config();
+app.use(userRouter);
+app.use(express.json());
+
+app.listen(port, () => {
+  console.log(`Server is up on port ${port}`);
+});
