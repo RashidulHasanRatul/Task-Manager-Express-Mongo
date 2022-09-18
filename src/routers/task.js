@@ -11,6 +11,7 @@ router.post("/tasks", check_login, async (req, res) => {
   try {
     const task = new Task({
       ...req.body,
+      author: req.user._id,
     });
     await task.save();
     res.status(201).send(task);
