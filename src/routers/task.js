@@ -23,7 +23,7 @@ router.post("/tasks", check_login, async (req, res) => {
 // get all tasks
 router.get("/tasks", check_login, async (req, res) => {
   try {
-    const tasks = await Task.find({});
+    const tasks = await Task.find({ author: req.user._id });
     res.send(tasks);
   } catch (error) {
     res.status(500).send(error);
@@ -34,7 +34,9 @@ router.get("/tasks", check_login, async (req, res) => {
 router.get("/tasks/:id", check_login, async (req, res) => {
   const _id = req.params.id;
   try {
-    const task = await Task.findById(_id);
+    const task = await Task.findOne({ author: req.user._id });
+    console.log(req.user._id);
+    console.log(task);
     if (!task) {
       return res.status(404).send();
     }
@@ -55,12 +57,15 @@ router.patch("/tasks/:id", check_login, async (req, res) => {
     return res.status(400).send({ error: "Invalid updates!" });
   }
   try {
-    const task = await Task.findById(req.params.id);
-    updates.forEach((update) => (task[update] = req.body[update]));
-    await task.save();
+    const task = await Task.findById({
+      _id: req.params._id,
+      author: req.user._id,
+    });
     if (!task) {
       return res.status(404).send();
     }
+    updates.forEach((update) => (task[update] = req.body[update]));
+    await task.save();
     res.send(task);
   } catch (error) {
     res.status(400).send(error);
@@ -70,7 +75,10 @@ router.patch("/tasks/:id", check_login, async (req, res) => {
 // delete task by id
 router.delete("/tasks/:id", check_login, async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
+    const task = await Task.findByIdAndDelete({
+      _id: req.params._id,
+      author: req.user._id,
+    });
     if (!task) {
       return res.status(404).send();
     }
