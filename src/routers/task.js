@@ -30,6 +30,21 @@ router.get("/tasks", check_login, async (req, res) => {
   }
 });
 
+// filtered tasks
+router.get("/tasks", check_login, async (req, res) => {
+  try {
+    const tasks = await Task.find({ 
+      path:'tasks',
+      match: {
+        completed: true,
+      }
+    });
+    res.send(tasks);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 // get task by id
 router.get("/tasks/:id", check_login, async (req, res) => {
   const _id = req.params.id;
