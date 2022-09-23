@@ -4,7 +4,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const check_login = require("../middleware/check_login");
-
+const multer = require("multer");
 // signup
 router.post("/users", async (req, res) => {
   try {
@@ -26,6 +26,19 @@ router.post("/users", async (req, res) => {
     res.status(400).send(error);
   }
 });
+
+const upload = multer({
+  dest: "avatars",
+});
+
+router.post(
+  "/users/me/avatar",
+  upload.single("ofc"),
+  check_login,
+  (req, res) => {
+    res.send("File uploaded successfully");
+  }
+);
 
 // login
 router.post("/users/login", async (req, res) => {

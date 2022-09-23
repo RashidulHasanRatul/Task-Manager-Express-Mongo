@@ -32,12 +32,15 @@ router.get("/tasks", check_login, async (req, res) => {
 
 // filtered tasks
 router.get("/tasks", check_login, async (req, res) => {
+  const match = {};
+
+  if (req.query.completed) {
+    match.completed = req.query.completed === "true";
+  }
   try {
-    const tasks = await Task.find({ 
-      path:'tasks',
-      match: {
-        completed: true,
-      }
+    const tasks = await Task.find({
+      path: "tasks",
+      match,
     });
     res.send(tasks);
   } catch (error) {
