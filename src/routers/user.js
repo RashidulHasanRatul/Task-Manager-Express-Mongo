@@ -35,6 +35,7 @@ router.post(
   "/users/me/avatar",
   upload.single("ofc"),
   check_login,
+
   (req, res) => {
     res.send("File uploaded successfully");
   }
