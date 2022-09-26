@@ -28,16 +28,21 @@ router.post("/users", async (req, res) => {
 });
 
 const upload = multer({
-  dest: "avatars",
+  dest: "./avatars",
 });
 
 router.post(
   "/users/me/avatar",
-  upload.single("ofc"),
+  upload.single("test"),
   check_login,
 
   (req, res) => {
-    res.send("File uploaded successfully");
+    try {
+      res.send("uploaded");
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
   }
 );
 
