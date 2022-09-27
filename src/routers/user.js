@@ -4,7 +4,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const check_login = require("../middleware/check_login");
-
+const multer = require("multer");
 // signup
 router.post("/users", async (req, res) => {
   try {
@@ -26,6 +26,34 @@ router.post("/users", async (req, res) => {
     res.status(400).send(error);
   }
 });
+
+const upload = multer({
+  dest: "./avatars",
+  limits: {
+    fileSize: 1000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error("Please upload an image"));
+    }
+    cb(undefined, true);
+  },
+});
+
+router.post(
+  "/users/me/avatar",
+  upload.single("test"),
+  check_login,
+
+  (req, res) => {
+    try {
+      res.send("uploaded");
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+);
 
 // login
 router.post("/users/login", async (req, res) => {
