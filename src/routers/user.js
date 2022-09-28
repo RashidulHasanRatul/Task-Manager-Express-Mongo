@@ -52,6 +52,9 @@ router.post(
       console.log(error);
       res.status(400).send(error);
     }
+  },
+  (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
   }
 );
 
