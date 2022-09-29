@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const check_login = require("../middleware/check_login");
 const multer = require("multer");
+const sharp = require("sharp");
 // signup
 router.post("/users", async (req, res) => {
   try {
@@ -46,7 +47,11 @@ router.post(
 
   async (req, res) => {
     try {
-      req.user.avatar = req.file.buffer;
+      const buffer = await sharp(req.file.buffer)
+        .resize({ width: 350, height: 350 })
+        .png()
+        .toBuffer();
+      req.user.avatar = buffer;
       await req.user.save();
       res.send("uploaded");
     } catch (error) {
@@ -78,7 +83,7 @@ router.get("/users/:id/avatar", async (req, res) => {
     if (!user || !user.avatar) {
       throw new Error();
     }
-    res.set("Content-Type", "image/jpg");
+    res.set("Content-Type", "image/png");
     res.send(user.avatar);
   } catch (error) {
     console.log(error);
