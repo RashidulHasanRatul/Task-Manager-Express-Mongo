@@ -71,6 +71,21 @@ router.delete("/users/me/avatar", check_login, async (req, res) => {
   }
 });
 
+// get avatar
+router.get("/users/:id/avatar", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.avatar) {
+      throw new Error();
+    }
+    res.set("Content-Type", "image/jpg");
+    res.send(user.avatar);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+});
+
 // login
 router.post("/users/login", async (req, res) => {
   try {
