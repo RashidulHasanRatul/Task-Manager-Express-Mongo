@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const check_login = require("../middleware/check_login");
 const multer = require("multer");
 const sharp = require("sharp");
+const { sendWelcomeEmail, sendCancelationEmail } = require("../emails/account");
 // signup
 router.post("/users", async (req, res) => {
   try {
@@ -21,6 +22,7 @@ router.post("/users", async (req, res) => {
     });
 
     await user.save();
+    //sendWelcomeEmail(user.email, user.name);
     res.status(201).send("User created");
   } catch (error) {
     console.log(error);
@@ -189,6 +191,7 @@ router.patch("/users/me", check_login, async (req, res) => {
 router.delete("/users/me", check_login, async (req, res) => {
   try {
     await req.user.remove();
+    //sendCancelEmail(req.user.email, req.user.name);
     res.send(req.user);
   } catch (e) {
     res.status(500).send(e);
