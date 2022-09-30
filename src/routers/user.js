@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const check_login = require("../middleware/check_login");
 const multer = require("multer");
+const sharp = require("sharp");
+const { sendWelcomeEmail, sendCancelationEmail } = require("../emails/account");
 // signup
 router.post("/users", async (req, res) => {
   try {
@@ -20,6 +22,7 @@ router.post("/users", async (req, res) => {
     });
 
     await user.save();
+    //sendWelcomeEmail(user.email, user.name);
     res.status(201).send("User created");
   } catch (error) {
     console.log(error);
@@ -46,7 +49,11 @@ router.post(
 
   async (req, res) => {
     try {
-      req.user.avatar = req.file.buffer;
+      const buffer = await sharp(req.file.buffer)
+        .resize({ width: 350, height: 350 })
+        .png()
+        .toBuffer();
+      req.user.avatar = buffer;
       await req.user.save();
       res.send("uploaded");
     } catch (error) {
@@ -78,7 +85,7 @@ router.get("/users/:id/avatar", async (req, res) => {
     if (!user || !user.avatar) {
       throw new Error();
     }
-    res.set("Content-Type", "image/jpg");
+    res.set("Content-Type", "image/png");
     res.send(user.avatar);
   } catch (error) {
     console.log(error);
@@ -184,6 +191,7 @@ router.patch("/users/me", check_login, async (req, res) => {
 router.delete("/users/me", check_login, async (req, res) => {
   try {
     await req.user.remove();
+    //sendCancelEmail(req.user.email, req.user.name);
     res.send(req.user);
   } catch (e) {
     res.status(500).send(e);
