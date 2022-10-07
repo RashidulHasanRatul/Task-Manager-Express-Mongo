@@ -8,6 +8,9 @@
     "dev": "env-cmd ./env nodemon src/index.js",
     "test": "  jest --watch"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
